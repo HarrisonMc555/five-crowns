@@ -1,6 +1,7 @@
 mod card;
 mod game;
 mod rank;
+mod score_group;
 mod suit;
 
 fn main() {
@@ -9,6 +10,11 @@ fn main() {
         card::full_deck()
             .map(|card| card.to_string())
             .collect::<Vec<_>>()
-            .join(", ")
+    );
+    println!(
+        "{:?}",
+        card::full_deck()
+            .map(|card| card.score().to_string())
+            .collect::<Vec<_>>()
     );
 }

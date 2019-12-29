@@ -10,8 +10,20 @@ pub struct Card {
 }
 
 impl Card {
-    fn new(suit: Suit, rank: Rank) -> Self {
+    pub fn new(suit: Suit, rank: Rank) -> Self {
         Card { suit, rank }
+    }
+
+    pub fn score(&self) -> u32 {
+        self.rank.score()
+    }
+
+    pub fn suit(&self) -> Suit {
+        self.suit
+    }
+
+    pub fn rank(&self) -> Rank {
+        self.rank
     }
 }
 
