@@ -1,8 +1,11 @@
 mod card;
 mod game;
+mod hand;
 mod rank;
+mod score;
 mod score_group;
 mod suit;
+mod utils;
 
 fn main() {
     println!(
