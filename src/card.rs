@@ -1,5 +1,6 @@
 use std::fmt;
 
+use crate::game_state::GameState;
 use crate::rank::{Rank, ALL_RANKS};
 use crate::score::Score;
 use crate::suit::{Suit, ALL_SUITS};
@@ -45,9 +46,25 @@ impl Card {
         self.normal().map(NormalCard::rank)
     }
 
+    pub fn is_wild(&self, game_state: &GameState) -> bool {
+        game_state.is_card_wild(*self)
+    }
+
     pub fn normal(&self) -> Option<&NormalCard> {
         if let Card::Normal(card) = self {
             Some(card)
+        } else {
+            None
+        }
+    }
+
+    pub fn non_wild(&self, game_state: &GameState) -> Option<&NormalCard> {
+        if let Card::Normal(card) = self {
+            if self.is_wild(game_state) {
+                None
+            } else {
+                Some(card)
+            }
         } else {
             None
         }
@@ -123,13 +140,34 @@ mod test {
     #[test]
     fn test_try_from() {
         // Valid
-        assert_eq!(Some(Card::new(Suit::Spade, Rank::Three)), Card::try_from("3S"));
-        assert_eq!(Some(Card::new(Suit::Club, Rank::Five)), Card::try_from("5C"));
-        assert_eq!(Some(Card::new(Suit::Heart, Rank::Seven)), Card::try_from("7H"));
-        assert_eq!(Some(Card::new(Suit::Diamond, Rank::Ten)), Card::try_from("10D"));
-        assert_eq!(Some(Card::new(Suit::Star, Rank::Jack)), Card::try_from("JR"));
-        assert_eq!(Some(Card::new(Suit::Spade, Rank::Queen)), Card::try_from("QS"));
-        assert_eq!(Some(Card::new(Suit::Club, Rank::King)), Card::try_from("KC"));
+        assert_eq!(
+            Some(Card::new(Suit::Spade, Rank::Three)),
+            Card::try_from("3S")
+        );
+        assert_eq!(
+            Some(Card::new(Suit::Club, Rank::Five)),
+            Card::try_from("5C")
+        );
+        assert_eq!(
+            Some(Card::new(Suit::Heart, Rank::Seven)),
+            Card::try_from("7H")
+        );
+        assert_eq!(
+            Some(Card::new(Suit::Diamond, Rank::Ten)),
+            Card::try_from("10D")
+        );
+        assert_eq!(
+            Some(Card::new(Suit::Star, Rank::Jack)),
+            Card::try_from("JR")
+        );
+        assert_eq!(
+            Some(Card::new(Suit::Spade, Rank::Queen)),
+            Card::try_from("QS")
+        );
+        assert_eq!(
+            Some(Card::new(Suit::Club, Rank::King)),
+            Card::try_from("KC")
+        );
         // Invalid rank
         assert_eq!(None, Card::try_from("1D"));
         assert_eq!(None, Card::try_from("2R"));

@@ -1,5 +1,6 @@
 mod card;
 mod game;
+mod game_state;
 mod hand;
 mod rank;
 mod score;
