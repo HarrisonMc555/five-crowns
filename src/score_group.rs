@@ -8,6 +8,7 @@ const MIN_CARDS_SET: usize = MIN_CARDS;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
+#[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub enum Error {
     TooFewCards,
     TooManyCards,
@@ -15,17 +16,20 @@ pub enum Error {
     NotAllInARow,
 }
 
+#[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub enum ScoreGroup {
     Run(Run),
     Set(Set),
 }
 
+#[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Run {
     suit: Suit,
     low: Rank,
     high: Rank,
 }
 
+#[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Set {
     rank: Rank,
     suits: Vec<Suit>,
@@ -38,7 +42,7 @@ impl Run {
             return Err(Error::TooFewCards);
         }
         let mut normal_cards = cards.iter().flat_map(Card::normal).collect::<Vec<_>>();
-        let num_jokers = cards.len() - normal_cards.len();
+        let mut num_jokers = cards.len() - normal_cards.len();
         assert_eq!(num_jokers, cards.iter().filter(|c| c.is_joker()).count());
         let first_card = if let Some(c) = normal_cards.first() {
             c
@@ -52,9 +56,12 @@ impl Run {
         normal_cards.sort_unstable_by_key(|c| c.rank());
         for window in normal_cards.windows(2) {
             let (prev, next) = (window[0], window[1]);
-            if prev.rank().next() != Some(next.rank()) {
+            let steps = prev.rank().steps_to(next.rank());
+            let num_wilds_required = steps - 1;
+            if num_wilds_required < num_jokers as isize {
                 return Err(Error::NotAllInARow);
             }
+            num_jokers -= num_wilds_required as usize;
         }
         Ok(Run {
             suit,
@@ -72,11 +79,47 @@ impl Run {
     }
 }
 
-// #[cfg(test)]
-// mod test {
-//     use super::*;
-//     #[test]
-//     fn test_run_try_from() {
-//         assert_eq!(Run::try_from());
-//     }
-// }
+#[cfg(test)]
+mod test {
+    use super::*;
+    #[test]
+    fn test_run_try_from() {
+        assert_eq!(
+            Ok(Run {
+                suit: Suit::Spade,
+                low: Rank::Three,
+                high: Rank::Five
+            }),
+            Run::try_from(&cards_from_str("3S,4S,5S"))
+        );
+        assert_eq!(
+            Ok(Run {
+                suit: Suit::Heart,
+                low: Rank::Seven,
+                high: Rank::Ten
+            }),
+            Run::try_from(&cards_from_str("8H,9H,7H,10H"))
+        );
+        assert_eq!(
+            Ok(Run {
+                suit: Suit::Club,
+                low: Rank::Ten,
+                high: Rank::King
+            }),
+            Run::try_from(&cards_from_str("JC,10C,KC,QC"))
+        );
+        assert_eq!(
+            Ok(Run {
+                suit: Suit::Diamond,
+                low: Rank::Five,
+                high: Rank::Seven
+            }),
+            Run::try_from(&cards_from_str("7D,5D,Joker"))
+        );
+    }
+
+    fn cards_from_str(string: &str) -> Vec<Card> {
+        use crate::hand::Hand;
+        Hand::try_from(string).unwrap().cards().to_vec()
+    }
+}

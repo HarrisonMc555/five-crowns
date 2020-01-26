@@ -78,6 +78,10 @@ impl Rank {
             _ => return None,
         })
     }
+
+    pub fn steps_to(&self, dest: Rank) -> isize {
+        dest.index() as isize - self.index() as isize
+    }
 }
 
 impl fmt::Display for Rank {
