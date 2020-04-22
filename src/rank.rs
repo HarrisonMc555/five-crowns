@@ -43,7 +43,8 @@ impl Rank {
     }
 
     pub fn minus(&self, offset: usize) -> Option<Rank> {
-        ALL_RANKS.get(self.index() - offset).cloned()
+        let index = self.index().checked_sub(offset)?;
+        ALL_RANKS.get(index).cloned()
     }
 
     fn index(&self) -> usize {
@@ -82,6 +83,32 @@ impl Rank {
     pub fn steps_to(&self, dest: Rank) -> isize {
         dest.index() as isize - self.index() as isize
     }
+
+    pub fn range(begin: Rank, end: Rank) -> impl Iterator<Item = Rank> {
+        RankRange {
+            cur: Some(begin),
+            end,
+        }
+    }
+}
+
+struct RankRange {
+    cur: Option<Rank>,
+    end: Rank,
+}
+
+impl Iterator for RankRange {
+    type Item = Rank;
+
+    fn next(&mut self) -> Option<Rank> {
+        let cur = self.cur?;
+        if cur.index() > self.end.index() {
+            self.cur = None;
+            return None;
+        }
+        self.cur = cur.next();
+        Some(cur)
+    }
 }
 
 impl fmt::Display for Rank {
@@ -103,7 +130,8 @@ impl fmt::Display for Rank {
     }
 }
 
-pub(crate) const ALL_RANKS: [Rank; 11] = [
+pub(crate) const NUM_RANKS: usize = 11;
+pub(crate) const ALL_RANKS: [Rank; NUM_RANKS] = [
     Rank::Three,
     Rank::Four,
     Rank::Five,
