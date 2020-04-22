@@ -46,10 +46,6 @@ impl Card {
         self.normal().map(NormalCard::rank)
     }
 
-    pub fn is_wild(&self, game_state: &GameState) -> bool {
-        game_state.is_card_wild(*self)
-    }
-
     pub fn normal(&self) -> Option<&NormalCard> {
         if let Card::Normal(card) = self {
             Some(card)
@@ -58,30 +54,12 @@ impl Card {
         }
     }
 
-    pub fn non_wild(&self, game_state: &GameState) -> Option<&NormalCard> {
-        if let Card::Normal(card) = self {
-            if self.is_wild(game_state) {
-                None
-            } else {
-                Some(card)
-            }
-        } else {
-            None
-        }
-    }
-
     pub fn is_normal(&self) -> bool {
-        match self {
-            Card::Normal(_) => true,
-            _ => false,
-        }
+        matches!(self, Card::Normal(_))
     }
 
     pub fn is_joker(&self) -> bool {
-        match self {
-            Card::Joker => true,
-            _ => false,
-        }
+        matches!(self, Card::Joker)
     }
 
     pub fn try_from(string: &str) -> Option<Self> {
@@ -189,5 +167,7 @@ mod test {
         assert_eq!(None, Card::try_from("CK"));
         // Empty
         assert_eq!(None, Card::try_from(""));
+        // Garbage
+        assert_eq!(None, Card::try_from("Hello"));
     }
 }

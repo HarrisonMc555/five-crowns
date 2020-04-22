@@ -55,7 +55,7 @@ enum SetInfo {
 }
 
 impl Run {
-    fn try_from(cards: &[Card], game_state: &GameState) -> Result<Run> {
+    pub fn try_from(cards: &[Card], game_state: &GameState) -> Result<Run> {
         if cards.len() < MIN_CARDS_RUN {
             return Err(Error::TooFewCards);
         }
@@ -101,7 +101,7 @@ impl Run {
 fn first_non_wild(cards: &[Card], game_state: &GameState) -> Option<NormalCard> {
     cards
         .iter()
-        .filter_map(|card| card.non_wild(game_state).cloned())
+        .filter_map(|&card| game_state.non_wild(card))
         .next()
 }
 
@@ -112,7 +112,7 @@ fn first_non_wild_with_index(
     cards
         .iter()
         .enumerate()
-        .filter_map(|(i, card)| card.non_wild(game_state).map(|&nc| (i, nc)))
+        .filter_map(|(i, &card)| game_state.non_wild(card).map(|nc| (i, nc)))
         .next()
 }
 
@@ -128,8 +128,7 @@ fn non_wilds<'a>(
 ) -> impl 'a + Iterator<Item = NormalCard> {
     cards
         .iter()
-        .filter_map(move |card| card.non_wild(game_state))
-        .cloned()
+        .filter_map(move |&card| game_state.non_wild(card))
 }
 
 fn all_match_expected_suit(cards: &[Card], game_state: &GameState, suit: Suit) -> bool {
@@ -145,19 +144,19 @@ fn all_match_expected_ranks(
     cards
         .iter()
         .zip(Rank::range(low_rank, high_rank))
-        .filter_map(|(card, rank)| card.non_wild(game_state).map(|c| (c, rank)))
+        .filter_map(|(&card, rank)| game_state.non_wild(card).map(|c| (c, rank)))
         .all(|(card, rank)| card.rank() == rank)
 }
 
 fn all_match_expected_rank(cards: &[Card], game_state: &GameState, rank: Rank) -> bool {
     cards
         .iter()
-        .filter_map(|card| card.non_wild(game_state))
+        .filter_map(|&card| game_state.non_wild(card))
         .all(|card| card.rank() == rank)
 }
 
 impl Set {
-    fn try_from(cards: &[Card], game_state: &GameState) -> Result<Set> {
+    pub fn try_from(cards: &[Card], game_state: &GameState) -> Result<Set> {
         if cards.len() < MIN_CARDS_SET {
             return Err(Error::TooFewCards);
         }
@@ -263,10 +262,7 @@ mod test {
     #[test]
     fn run_try_from_all_jokers() -> Result<()> {
         let game_state = GameState::new(Rank::Six);
-        let run = Run::try_from(
-            &cards_from_str("Joker,Joker,Joker"),
-            &game_state,
-        )?;
+        let run = Run::try_from(&cards_from_str("Joker,Joker,Joker"), &game_state)?;
         assert_eq!(run.info, RunInfo::AllWilds);
         Ok(())
     }
@@ -274,10 +270,7 @@ mod test {
     #[test]
     fn run_try_from_all_wilds() -> Result<()> {
         let game_state = GameState::new(Rank::Six);
-        let run = Run::try_from(
-            &cards_from_str("Joker,Joker,6D"),
-            &game_state,
-        )?;
+        let run = Run::try_from(&cards_from_str("Joker,Joker,6D"), &game_state)?;
         assert_eq!(run.info, RunInfo::AllWilds);
         Ok(())
     }
@@ -400,10 +393,7 @@ mod test {
     #[test]
     fn set_try_from_all_jokers() -> Result<()> {
         let game_state = GameState::new(Rank::Six);
-        let set = Set::try_from(
-            &cards_from_str("Joker,Joker,Joker"),
-            &game_state,
-        )?;
+        let set = Set::try_from(&cards_from_str("Joker,Joker,Joker"), &game_state)?;
         assert_eq!(set.info, SetInfo::AllWilds);
         Ok(())
     }
@@ -411,10 +401,7 @@ mod test {
     #[test]
     fn set_try_from_all_wilds() -> Result<()> {
         let game_state = GameState::new(Rank::Six);
-        let set = Set::try_from(
-            &cards_from_str("Joker,Joker,6D"),
-            &game_state,
-        )?;
+        let set = Set::try_from(&cards_from_str("Joker,Joker,6D"), &game_state)?;
         assert_eq!(set.info, SetInfo::AllWilds);
         Ok(())
     }

@@ -1,4 +1,4 @@
-use crate::card::Card;
+use crate::card::{Card, NormalCard};
 use crate::rank::Rank;
 
 pub struct GameState {
@@ -19,5 +19,11 @@ impl GameState {
 
     pub fn is_rank_wild(&self, rank: Rank) -> bool {
         self.wild_rank == rank
+    }
+
+    pub fn non_wild(&self, card: Card) -> Option<NormalCard> {
+        card.normal()
+            .filter(|card| !self.is_rank_wild(card.rank()))
+            .cloned()
     }
 }
