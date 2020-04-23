@@ -18,8 +18,8 @@ pub enum Rank {
 }
 
 impl Rank {
-    pub fn score(&self) -> Score {
-        Score(match self {
+    pub fn number(self) -> usize {
+        match self {
             Rank::Three => 3,
             Rank::Four => 4,
             Rank::Five => 5,
@@ -31,7 +31,11 @@ impl Rank {
             Rank::Jack => 11,
             Rank::Queen => 12,
             Rank::King => 13,
-        })
+        }
+    }
+
+    pub fn score(self) -> Score {
+        Score(self.number() as u32)
     }
 
     pub fn next(&self) -> Option<Rank> {

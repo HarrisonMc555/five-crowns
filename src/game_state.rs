@@ -1,6 +1,7 @@
 use crate::card::{Card, NormalCard};
 use crate::rank::Rank;
 
+#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub struct GameState {
     wild_rank: Rank,
 }
@@ -25,5 +26,9 @@ impl GameState {
         card.normal()
             .filter(|card| !self.is_rank_wild(card.rank()))
             .cloned()
+    }
+
+    pub fn wild_rank(self) -> Rank {
+        self.wild_rank
     }
 }

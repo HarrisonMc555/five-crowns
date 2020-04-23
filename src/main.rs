@@ -20,6 +20,11 @@ fn main() {
             println!("\t{}", string);
         }
     }
+
+    let game = game::Game::new(2);
+    for line in game.debug_strings() {
+        println!("{}", line);
+    }
 }
 
 fn hand_info(hand_str: &str, game_state: &game_state::GameState) -> Vec<String> {
