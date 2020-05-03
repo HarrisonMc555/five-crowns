@@ -62,9 +62,7 @@ mod test {
         // eprintln!("{:?}", "".split(',').collect::<Vec<_>>());
         // Single card is ok
         assert_eq!(
-            Some(Hand::new(vec![
-                Card::try_from("KR").unwrap(),
-            ])),
+            Some(Hand::new(vec![Card::try_from("KR").unwrap(),])),
             Hand::try_from("KR")
         );
         // Empty is ok

@@ -34,5 +34,8 @@ fn hand_info(hand_str: &str, game_state: &game_state::GameState) -> Vec<String> 
     };
     let set_result = score_group::Set::try_from(&hand.cards(), &game_state);
     let run_result = score_group::Run::try_from(&hand.cards(), &game_state);
-    vec![format!("Set: {:?}", set_result), format!("Run: {:?}", run_result)]
+    vec![
+        format!("Set: {:?}", set_result),
+        format!("Run: {:?}", run_result),
+    ]
 }

@@ -56,10 +56,7 @@ impl Game {
             "Discard Pile: {}",
             pretty_cards(&self.discard_pile)
         ));
-        strings.push(format!(
-            "Deck: {}",
-            pretty_cards(&self.deck)
-        ));
+        strings.push(format!("Deck: {}", pretty_cards(&self.deck)));
         strings
     }
 }
