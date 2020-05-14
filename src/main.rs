@@ -21,7 +21,13 @@ fn main() {
         }
     }
 
-    let game = game::Game::new(2);
+    println!();
+    let mut game = game::Game::new(2);
+    for line in game.debug_strings() {
+        println!("{}", line);
+    }
+    println!();
+    game.draw(game::DrawLocation::DrawPile);
     for line in game.debug_strings() {
         println!("{}", line);
     }
