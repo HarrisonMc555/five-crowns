@@ -2,6 +2,7 @@ mod card;
 mod game;
 mod game_state;
 mod hand;
+mod player;
 mod rank;
 mod score;
 mod score_group;
@@ -23,14 +24,11 @@ fn main() {
 
     println!();
     let mut game = game::Game::new(2);
-    for line in game.debug_strings() {
-        println!("{}", line);
-    }
-    println!();
+    game.debug_print();
     game.draw(game::DrawLocation::DrawPile);
-    for line in game.debug_strings() {
-        println!("{}", line);
-    }
+    game.debug_print();
+    game.discard(game.cur_player().hand[0]).unwrap();
+    game.debug_print();
 }
 
 fn hand_info(hand_str: &str, game_state: &game_state::GameState) -> Vec<String> {

@@ -7,7 +7,7 @@ use rand::seq::SliceRandom;
 use rand::thread_rng;
 
 pub struct Game {
-    players: Vec<Player>,
+    players: Vec<PlayerInfo>,
     current_player_index: usize,
     first_player_gone_out_index: Option<usize>,
     deck: Vec<Card>,
@@ -15,9 +15,9 @@ pub struct Game {
     state: GameState,
 }
 
-struct Player {
-    hand: Vec<Card>,
-    score: Score,
+pub struct PlayerInfo {
+    pub hand: Vec<Card>,
+    pub score: Score,
 }
 
 pub enum DrawLocation {
@@ -35,12 +35,17 @@ pub struct EndOfRoundAction {
     remaining: Vec<Card>,
 }
 
+type Result<T> = std::result::Result<T, Error>;
+
+#[derive(Debug, Eq, PartialEq, Ord, PartialOrd)]
+pub struct Error;
+
 impl Game {
     pub fn new(num_players: usize) -> Self {
         let mut deck = crate::card::full_deck().collect::<Vec<_>>();
         let mut rng = thread_rng();
         deck.shuffle(&mut rng);
-        let players = (0..num_players).map(|_| Player::new()).collect();
+        let players = (0..num_players).map(|_| PlayerInfo::new()).collect();
         let discard_pile = Vec::new();
         let state = GameState::new(Rank::Three);
         let mut game = Game {
@@ -62,8 +67,28 @@ impl Game {
             DrawLocation::DrawPile => self.next_card_from_deck(),
             DrawLocation::DiscardPile => self.next_card_from_discard_pile(),
         };
-        self.players[self.current_player_index].hand.push(card);
+        self.cur_player_mut().hand.push(card);
         card
+    }
+
+    pub fn discard(&mut self, card: Card) -> Result<()> {
+        let index = self
+            .cur_player()
+            .hand
+            .iter()
+            .position(|c| card == *c)
+            .ok_or(Error)?;
+        let taken = self.cur_player_mut().hand.remove(index);
+        self.discard_pile.push(taken);
+        Ok(())
+    }
+
+    pub fn cur_player(&self) -> &PlayerInfo {
+        &self.players[self.current_player_index]
+    }
+
+    pub fn cur_player_mut(&mut self) -> &mut PlayerInfo {
+        &mut self.players[self.current_player_index]
     }
 
     // pub fn turn(&mut self, discard: Card, going_out: Option<Vec<ScoreGroup>>) {
@@ -119,7 +144,7 @@ impl Game {
     pub fn debug_strings(&self) -> Vec<String> {
         let mut strings = Vec::new();
         strings.push(format!("Round: {} cards", self.state.wild_rank().number()));
-        strings.push("Players:".to_string());
+        strings.push("PlayerInfos:".to_string());
         for player in self.players.iter() {
             strings.push(player.debug_string());
         }
@@ -130,11 +155,18 @@ impl Game {
         strings.push(format!("Deck: {}", pretty_cards(&self.deck)));
         strings
     }
+
+    pub fn debug_print(&self) {
+        for line in self.debug_strings() {
+            println!("{}", line);
+        }
+        println!();
+    }
 }
 
-impl Player {
+impl PlayerInfo {
     pub fn new() -> Self {
-        Player {
+        PlayerInfo {
             hand: Vec::new(),
             score: Score::new(),
         }

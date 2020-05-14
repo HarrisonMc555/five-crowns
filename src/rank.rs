@@ -34,6 +34,23 @@ impl Rank {
         }
     }
 
+    pub fn try_from_number(number: usize) -> Option<Self> {
+        Some(match number {
+            3 => Rank::Three,
+            4 => Rank::Four,
+            5 => Rank::Five,
+            6 => Rank::Six,
+            7 => Rank::Seven,
+            8 => Rank::Eight,
+            9 => Rank::Nine,
+            10 => Rank::Ten,
+            11 => Rank::Jack,
+            12 => Rank::Queen,
+            13 => Rank::King,
+            _ => return None,
+        })
+    }
+
     pub fn score(self) -> Score {
         Score(self.number() as u32)
     }
