@@ -93,10 +93,7 @@ impl Game {
 
     // pub fn turn(&mut self, discard: Card, going_out: Option<Vec<ScoreGroup>>) {
     pub fn turn(&mut self, action: Action) {
-        let discard = match action {
-            Action::Discard(discard) => discard,
-            Action::GoOut(discard, _) => discard,
-        };
+        let discard = action.discard();
         self.discard_pile.push(discard);
         if let Action::GoOut(_, score_groups) = action {
             self.first_player_gone_out_index = Some(self.current_player_index);
@@ -161,6 +158,15 @@ impl Game {
             println!("{}", line);
         }
         println!();
+    }
+}
+
+impl Action {
+    pub fn discard(&self) -> Card {
+        *match self {
+            Action::Discard(discard) => discard,
+            Action::GoOut(discard, _) => discard,
+        }
     }
 }
 
