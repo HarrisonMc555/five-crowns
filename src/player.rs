@@ -10,7 +10,6 @@ pub struct StartRoundInfo {
     round_num: usize,
     num_cards: usize,
     wild_rank: Rank,
-    
 }
 
 impl StartRoundInfo {
