@@ -2,16 +2,12 @@ use crate::card::Card;
 
 #[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Hand {
-    cards: Vec<Card>,
+    pub cards: Vec<Card>,
 }
 
 impl Hand {
     pub fn new(cards: Vec<Card>) -> Self {
         Hand { cards }
-    }
-
-    pub fn cards(&self) -> &[Card] {
-        &self.cards
     }
 
     pub fn try_from(string: &str) -> Option<Self> {

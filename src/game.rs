@@ -31,8 +31,9 @@ pub enum Action {
 }
 
 pub struct EndOfRoundAction {
-    go_out: Vec<ScoreGroup>,
-    remaining: Vec<Card>,
+    pub discard: Card,
+    pub go_out: Vec<ScoreGroup>,
+    pub remaining: Vec<Card>,
 }
 
 type Result<T> = std::result::Result<T, Error>;
@@ -104,6 +105,8 @@ impl Game {
     }
 
     pub fn last_turn(&mut self, action: EndOfRoundAction) {
+        let discard = action.discard;
+        self.discard_pile.push(discard);
         let points = action.remaining.iter().map(|c| c.score()).sum::<Score>();
         self.players[self.current_player_index].score += points;
     }

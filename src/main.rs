@@ -38,8 +38,8 @@ fn hand_info(hand_str: &str, game_state: &game_state::GameState) -> Vec<String> 
         Some(h) => h,
         None => return vec!["Invalid hand".to_string()],
     };
-    let set_result = score_group::Set::try_from(&hand.cards(), &game_state);
-    let run_result = score_group::Run::try_from(&hand.cards(), &game_state);
+    let set_result = score_group::Set::try_from(&hand.cards, &game_state);
+    let run_result = score_group::Run::try_from(&hand.cards, &game_state);
     vec![
         format!("Set: {:?}", set_result),
         format!("Run: {:?}", run_result),

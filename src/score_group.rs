@@ -422,6 +422,6 @@ mod test {
 
     fn cards_from_str(string: &str) -> Vec<Card> {
         use crate::hand::Hand;
-        Hand::try_from(string).unwrap().cards().to_vec()
+        Hand::try_from(string).unwrap().cards.to_vec()
     }
 }

@@ -31,4 +31,37 @@ impl GameState {
     pub fn wild_rank(self) -> Rank {
         self.wild_rank
     }
+
+    pub fn round_num(self) -> usize {
+        self.wild_rank.number() - 2
+    }
+
+    pub fn num_cards(self) -> usize {
+        self.wild_rank.number()
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_round_num() {
+        let game_state = GameState::new(Rank::Three);
+        assert_eq!(game_state.round_num(), 1);
+        let game_state = GameState::new(Rank::Ten);
+        assert_eq!(game_state.round_num(), 8);
+        let game_state = GameState::new(Rank::King);
+        assert_eq!(game_state.round_num(), 11);
+    }
+
+    #[test]
+    fn test_num_cards() {
+        let game_state = GameState::new(Rank::Three);
+        assert_eq!(game_state.num_cards(), 3);
+        let game_state = GameState::new(Rank::Ten);
+        assert_eq!(game_state.num_cards(), 10);
+        let game_state = GameState::new(Rank::King);
+        assert_eq!(game_state.num_cards(), 13);
+    }
 }
