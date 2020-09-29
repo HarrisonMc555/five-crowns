@@ -24,12 +24,12 @@ pub trait Player {
 }
 
 pub struct StartRoundInfo {
-    game_state: GameState,
+    pub game_state: GameState,
 }
 
-struct DummyPlayer {
-    hand: Hand,
-    game_state: GameState,
+pub struct DummyPlayer {
+    pub hand: Hand,
+    pub game_state: GameState,
 }
 
 impl Player for DummyPlayer {

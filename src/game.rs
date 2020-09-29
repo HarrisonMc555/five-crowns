@@ -63,6 +63,10 @@ impl Game {
         game
     }
 
+    pub fn state(&mut self) -> GameState {
+        self.state
+    }
+
     pub fn draw(&mut self, location: DrawLocation) -> Card {
         let card = match location {
             DrawLocation::DrawPile => self.next_card_from_deck(),
@@ -96,6 +100,10 @@ impl Game {
     pub fn turn(&mut self, action: Action) {
         let discard = action.discard();
         self.discard_pile.push(discard);
+        let hand = &mut self.cur_player_mut().hand;
+        let removed_index = hand.iter().position(|card| card == &discard);
+        assert!(removed_index.is_some());
+        hand.remove(removed_index.unwrap());
         if let Action::GoOut(_, score_groups) = action {
             self.first_player_gone_out_index = Some(self.current_player_index);
             // Add score

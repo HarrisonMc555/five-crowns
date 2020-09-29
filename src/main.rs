@@ -26,10 +26,23 @@ fn main() {
 
     println!();
     let mut game = game::Game::new(2);
+    use player::Player;
+    let mut player = player::DummyPlayer {
+        hand: hand::Hand::new(Vec::new()),
+        game_state: game.state(),
+    };
+    player.start_game();
     game.debug_print();
-    game.draw(game::DrawLocation::DrawPile);
+    player.start_round(
+        player::StartRoundInfo {
+            game_state: game.state(),
+        },
+        hand::Hand::new(game.cur_player().hand.clone()),
+    );
+    let card = game.draw(player.your_draw());
     game.debug_print();
-    game.discard(game.cur_player().hand[0]).unwrap();
+    game.turn(player.your_turn(card));
+    // game.discard(game.cur_player().hand[0]).unwrap();
     game.debug_print();
 }
 
